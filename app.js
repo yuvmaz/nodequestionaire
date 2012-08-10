@@ -25,9 +25,8 @@ db.open(function(err, client) {
 	});
 
 function addUser(source, sourceUser) {
-	var user;
-	user = usersById[++userIndex] = {id: userIndex};
-	user[source] = sourceUser;
+	var user = {id: sourceUser.claimedIdentifier, firstname: sourceUser.firstname};
+	logins.insert(user);
 
 	return user;
 }
@@ -65,7 +64,7 @@ var app = express.createServer(
 
 
 app.get('/', function(req, res) {
-	var name = ( typeof req.user === 'undefined') ? 'Anonymous' : req.user.google_openid.firstname;
+	var name = ( typeof req.user === 'undefined') ? 'Anonymous' : req.user.firstname;
 	res.write('<h1>Hello ' + name + '</h1>');
 	res.write('<h2>You are ');
 	if(!req.loggedIn)
