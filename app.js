@@ -1,12 +1,23 @@
 var express = require('express'),
 	everyauth = require('everyauth'),
-	util = require('util');
+	util = require('util'),
+	mongo = require('mongodb');
 
 everyauth.debug=true;
 var users = {};
 var usersById = {};
 var userIndex = 0;
 
+var db = new mongo.Db('nodequestionaire', new mongo.Server('ds035997.mongolab.com',35997, {auto_reconnect: true}));
+db.open(function(err, client) {
+		client.authenticate('user', 'user', function(err, success) {
+			if(err)
+				console.log("error " + err);
+			else
+				console.log("success ");
+			console.log("in connecting to mongo");	
+		});
+	});
 
 function addUser(source, sourceUser) {
 	var user;
