@@ -61,18 +61,13 @@ var app = express.createServer(
 	express.session( {secret: 'BlablaBLA'}),
 	everyauth.middleware()
 );
+app.set('view engine', 'jade');
+
 
 
 
 app.get('/', function(req, res) {
-	var name = ( typeof req.user === 'undefined') ? 'Anonymous' : req.user.firstname;
-	res.write('<h1>Hello ' + name + '</h1>');
-	res.write('<h2>You are ');
-	if(!req.loggedIn)
-		res.write('not ');
-    res.write('authenticated</h2>');
-	res.write('<a href="/auth/openid">OpenID</a>');
-	res.end();
+    res.render('main.jade', {req: req});
 });
 
 app.listen(4000);

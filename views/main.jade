@@ -1,0 +1,14 @@
+- if (req.loggedIn)
+    h2 
+      span hello 
+      | #{req.user.firstname}
+    p You <span>are</span> authenticated!
+- else
+    h2 
+      span hello 
+      | Anonymous
+    p You are <span>not</span> authenticated
+    ul
+      li
+        a(href="/auth/openid") Authenticate
+
