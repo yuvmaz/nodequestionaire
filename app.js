@@ -3,21 +3,11 @@ var express = require('express'),
 	util = require('util'),
 	mongo = require('mongodb');
 
-everyauth.debug=true;
-var users = {};
-var usersById = {};
-var userIndex = 0;
 var logins;
 
 var db = new mongo.Db('nodequestionaire', new mongo.Server('ds035997.mongolab.com',35997, {auto_reconnect: true}));
 db.open(function(err, client) {
 		client.authenticate('user', 'user', function(err, success) {
-			if(err)
-				console.log("error " + err);
-			else {
-		       console.log("success ");
-			}
-			console.log("in connecting to mongo");
 		    db.collection('logins', function(err, collection) {
 				logins = collection;
 			});		
@@ -33,7 +23,9 @@ function addUser(source, sourceUser) {
 
 everyauth.everymodule
 	.findUserById(function(id, callback) {
-			callback(null, usersById[id]);
+			logins.findOne({id: id}, function(err, user) {
+				callback(null, user);
+			});
 	});
 
 everyauth.openid
@@ -48,8 +40,17 @@ everyauth.openid
 					});
 	})
 	.findOrCreateUser(function(session, userMetadata) {
-			return usersById[userMetadata.claimedIdentifier] ||
-			(usersById[userMetadata.claimedIdentifier] = addUser('google_openid', userMetadata));
+			var promise = this.Promise();
+			logins.findOne({id: userMetadata.claimedIdentifier}, function(err, user) {
+				if(err)
+					promise.fail(err);
+				if(user == null) 
+					promise.fulfill(addUser('google_openid', userMetadata));
+				else 
+					promise.fulfill(user);
+			});
+
+			return promise;
 	})
 	.redirectPath('/');
 
