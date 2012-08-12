@@ -2,8 +2,14 @@
 html
   head
     link(rel='stylesheet', href='/stylesheets/style.css', type='text/css')
+    link(rel='stylesheet', href='http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.22/themes/ui-lightness/jquery-ui.css', type='text/css')
+    script(type='text/javascript', src='https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.js')
+    script(type='text/javascript', src='https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.22/jquery-ui.js')
+    script(type='text/javascript', src='/javascript/script.js')
     title Hello World from Node.js
   body
+    div#settingsDialog(title: 'My Dialog', visibility: 'hidden')
+        p Select Language:  <input type='text' id='languageBox'>
     div#topPan
       p Hello from the World of Node.js
       div#topContactPan
@@ -11,8 +17,7 @@ html
         div#topMenuMiddlePan
           ul
             li
-              -if(req.loggedIn) 
-                a(href='') Settings
+                a(href='', id='settingsLink') Settings
     div#bodyPan
       div#bodyLeftPan
         != body
