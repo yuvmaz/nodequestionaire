@@ -5,14 +5,26 @@ var express = require('express'),
     users = require('./users');
 
 var logins;
+var languages;
 
 var db = new mongo.Db('nodequestionaire', new mongo.Server('ds035997.mongolab.com',35997, {auto_reconnect: true}));
 db.open(function(err, client) {
-    client.authenticate('user', 'user', function(err, success) {
-    db.collection('logins', function(err, collection) {
-        logins = collection;
-        });		
-    });
+       if(err) {
+            console.log(err);
+            return;
+        }
+        client.authenticate('user', 'user', function(err, success) {
+            db.collection('logins', function(err, collection) {
+                logins = collection;
+                console.log('ok');
+            });
+        /*        
+            db.collection('languages', function(err, collection) {
+                languages = collection;
+                console.log('ok');
+            });
+        */
+    });    
 });
 
 
@@ -51,6 +63,24 @@ app.set('view engine', 'jade');
 
 app.get('/', function(req, res) {
     res.render('main.jade', {req: req});
+});
+
+app.get('/getLanguages', function(req, res) {
+    var term = req.query.term;
+    var re = new RegExp("^" + term);
+    console.log(re);
+    languages.findOne( {Name: re}, function(err, lang) {
+        console.log(util.inspect(lang));
+    });
+    /*
+    var c = languages.find({Name: re}); 
+     c.each(function(doc) {
+        if(doc != null)
+            console.log(util.inspect(doc));
+    });
+    */
+
+
 });
 
 app.listen(4000);

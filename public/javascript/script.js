@@ -5,4 +5,6 @@ $(document).ready(function() {
         myDialog.dialog('open');
         return false;
     });
+
+    $('#languageBox').autocomplete({source:  "/getLanguages", minLength: 2});
 });
