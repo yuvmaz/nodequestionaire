@@ -1,34 +1,13 @@
 var express = require('express'),
 	everyauth = require('everyauth'),
 	util = require('util'),
-	mongo = require('mongodb'),
-    users = require('./users');
-
-var logins;
-var languages;
-
-var db = new mongo.Db('nodequestionaire', new mongo.Server('ds035997.mongolab.com',35997, {auto_reconnect: true}));
-db.open(function(err, client) {
-       if(err) {
-            console.log(err);
-            return;
-        }
-        client.authenticate('user', 'user', function(err, success) {
-            db.collection('logins', function(err, collection) {
-                logins = collection;
-                console.log('ok');
-            });
-            db.collection('languages', function(err, collection) {
-                languages = collection;
-                console.log('ok');
-            });
-    });    
-});
-
+    users = require('./users'),
+    languages = require('./languages');
+    
 
 everyauth.everymodule
 	.findUserById(function(id, callback) {
-    return users.findUser(logins, id, callback);
+    return users.findUser(id, callback);
 });
 
 everyauth.openid
@@ -44,7 +23,7 @@ everyauth.openid
     })
 	.findOrCreateUser(function(session, userMetadata) {
         var promise = this.Promise();
-        users.findOrCreateUser(logins, userMetadata, promise);
+        users.findOrCreateUser(userMetadata, promise);
 
         return promise;
 	})
@@ -65,14 +44,7 @@ app.get('/', function(req, res) {
 
 app.get('/getLanguages', function(req, res) {
     var term = req.query.term;
-    var re = new RegExp(".*" + term +".*", "i");
-    languages.find({Name: re}, {Name: 1}, function(err, cursor) {
-        cursor.toArray(function(err, arr) {
-            res.json(arr.map(function (obj) {
-                return obj.Name;
-            }));
-        });    
-    }); 
+    languages.findMatchingLanguages(term, res);
 });
 
 app.listen(4000);
