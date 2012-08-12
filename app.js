@@ -1,56 +1,42 @@
 var express = require('express'),
 	everyauth = require('everyauth'),
 	util = require('util'),
-	mongo = require('mongodb');
+	mongo = require('mongodb'),
+    users = require('./users');
 
 var logins;
 
 var db = new mongo.Db('nodequestionaire', new mongo.Server('ds035997.mongolab.com',35997, {auto_reconnect: true}));
 db.open(function(err, client) {
-		client.authenticate('user', 'user', function(err, success) {
-		    db.collection('logins', function(err, collection) {
-				logins = collection;
-			});		
-		});
-	});
+    client.authenticate('user', 'user', function(err, success) {
+    db.collection('logins', function(err, collection) {
+        logins = collection;
+        });		
+    });
+});
 
-function addUser(source, sourceUser) {
-	var user = {id: sourceUser.claimedIdentifier, firstname: sourceUser.firstname};
-	logins.insert(user);
-
-	return user;
-}
 
 everyauth.everymodule
 	.findUserById(function(id, callback) {
-			logins.findOne({id: id}, function(err, user) {
-				callback(null, user);
-			});
-	});
+    return users.findUser(logins, id, callback);
+});
 
 everyauth.openid
 	.myHostname('http://local.host:4000')
 	.sendToAuthenticationUri(function (req, res) {
-			var self = this;
-			this.relyingParty.authenticate('http://www.google.com/accounts/o8/id', false, function(err, authenticationUrl) {
-					if(err) 
-						return p.fail(err);
+        var self = this;
+        this.relyingParty.authenticate('http://www.google.com/accounts/o8/id', false, function(err, authenticationUrl) {
+        if(err) 
+            return p.fail(err);
 
-					self.redirect(res, authenticationUrl);
-					});
-	})
+        self.redirect(res, authenticationUrl);
+        });
+    })
 	.findOrCreateUser(function(session, userMetadata) {
-			var promise = this.Promise();
-			logins.findOne({id: userMetadata.claimedIdentifier}, function(err, user) {
-				if(err)
-					promise.fail(err);
-				if(user == null) 
-					promise.fulfill(addUser('google_openid', userMetadata));
-				else 
-					promise.fulfill(user);
-			});
+        var promise = this.Promise();
+        users.findOrCreateUser(logins, userMetadata, promise);
 
-			return promise;
+        return promise;
 	})
 	.redirectPath('/');
 
@@ -62,9 +48,6 @@ var app = express.createServer(
 	everyauth.middleware()
 );
 app.set('view engine', 'jade');
-
-
-
 
 app.get('/', function(req, res) {
     res.render('main.jade', {req: req});
