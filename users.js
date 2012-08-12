@@ -1,11 +1,20 @@
 var mongo = require('mongodb');
+var logins;
 
 exports.findUser = function(id, callback) {
-    openLoginsCollection( function(collection) {
-        collection.findOne({id: id}, function(err, user) {
-           callback(null, user);
+    if(logins == null) {
+        openLoginsCollection( function(collection) {
+            collection.findOne({id: id}, function(err, user) {
+               callback(null, user);
+            });
         });
-    });
+    }
+    else
+    {
+        logins.findOne({id: id}, function(err, user) {
+            callback(null, user);
+        });
+    }
 }
 
 
@@ -34,7 +43,7 @@ function addUser(sourceUser) {
 }
 
 function openLoginsCollection(callback) {
-    db = new mongo.Db('nodequestionaire', new mongo.Server('ds035997.mongolab.com',35997, {auto_reconnect: true, pool_size:4}));
+    var db = new mongo.Db('nodequestionaire', new mongo.Server('ds035997.mongolab.com',35997, {auto_reconnect: true, pool_size:4}));
     db.open(function(err, client) {
        if(err) {
             console.log(err);
@@ -42,6 +51,7 @@ function openLoginsCollection(callback) {
         }
         client.authenticate('user', 'user', function(err, success) {
             db.collection('logins', function(err, collection) {
+                logins = collection;
                 console.log('ok logins');
                 callback(collection);
                 //db.close();

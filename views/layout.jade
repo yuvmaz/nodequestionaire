@@ -17,7 +17,8 @@ html
         div#topMenuMiddlePan
           ul
             li
-                a(href='', id='settingsLink') Settings
+                -if (req.loggedIn)
+                    a(href='', id='settingsLink') Settings
     div#bodyPan
       div#bodyLeftPan
         != body
