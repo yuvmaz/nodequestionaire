@@ -6,5 +6,5 @@ $(document).ready(function() {
         return false;
     });
 
-    $('#languageBox').autocomplete({source:  "/getLanguages", minLength: 2});
+    $('#languageBox').autocomplete({source:  "/getLanguages", minLength: 3});
 });

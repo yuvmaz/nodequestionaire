@@ -18,12 +18,10 @@ db.open(function(err, client) {
                 logins = collection;
                 console.log('ok');
             });
-        /*        
             db.collection('languages', function(err, collection) {
                 languages = collection;
                 console.log('ok');
             });
-        */
     });    
 });
 
@@ -67,20 +65,14 @@ app.get('/', function(req, res) {
 
 app.get('/getLanguages', function(req, res) {
     var term = req.query.term;
-    var re = new RegExp("^" + term);
-    console.log(re);
-    languages.findOne( {Name: re}, function(err, lang) {
-        console.log(util.inspect(lang));
-    });
-    /*
-    var c = languages.find({Name: re}); 
-     c.each(function(doc) {
-        if(doc != null)
-            console.log(util.inspect(doc));
-    });
-    */
-
-
+    var re = new RegExp(".*" + term +".*", "i");
+    languages.find({Name: re}, {Name: 1}, function(err, cursor) {
+        cursor.toArray(function(err, arr) {
+            res.json(arr.map(function (obj) {
+                return obj.Name;
+            }));
+        });    
+    }); 
 });
 
 app.listen(4000);
