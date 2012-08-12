@@ -8,6 +8,11 @@ html
       p Hello from the World of Node.js
       div#topContactPan
       div#topMenuPan
+        div#topMenuMiddlePan
+          ul
+            li
+              -if(req.loggedIn) 
+                a(href='') Settings
     div#bodyPan
       div#bodyLeftPan
         != body

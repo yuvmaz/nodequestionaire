@@ -1,10 +1,4 @@
 
-function addUser(loginsCollection, sourceUser) {
-	var user = {id: sourceUser.claimedIdentifier, firstname: sourceUser.firstname};
-	loginsCollection.insert(user);
-
-	return user;
-}
 
 exports.findUser = function(loginsCollection, id, callback) {
     loginsCollection.findOne({id: id}, function(err, user) {
@@ -24,3 +18,12 @@ exports.findOrCreateUser = function(loginsCollection, userMetadata, promise) {
         promise.fulfill(user);
     });
 }
+
+
+function addUser(loginsCollection, sourceUser) {
+	var user = {id: sourceUser.claimedIdentifier, firstname: sourceUser.firstname};
+	loginsCollection.insert(user);
+
+	return user;
+}
+
