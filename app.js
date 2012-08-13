@@ -1,13 +1,14 @@
 var express = require('express'),
 	everyauth = require('everyauth'),
 	util = require('util'),
+    dbHub = require('./dbHub'),
     users = require('./users'),
     languages = require('./languages');
-    
 
+  
 everyauth.everymodule
 	.findUserById(function(id, callback) {
-    return users.findUser(id, callback);
+        return users.findUser(id, callback);
 });
 
 everyauth.openid

@@ -1,62 +1,44 @@
 var mongo = require('mongodb');
+var dbHub = require('./dbHub');
 var logins;
 
+
+dbHub.db.collection('logins', function(err, collection) {
+    if(err) {
+        console.log("Error in connecting to logins: " + err);
+        return;
+    }
+    logins = collection;
+});
+
 exports.findUser = function(id, callback) {
-    if(logins == null) {
-        openLoginsCollection( function(collection) {
-            collection.findOne({id: id}, function(err, user) {
-               callback(null, user);
-            });
-        });
-    }
-    else
-    {
-        logins.findOne({id: id}, function(err, user) {
-            callback(null, user);
-        });
-    }
+    logins.findOne({id: id}, function(err, user) {
+        if(err) {
+            console.log("Error in finding user: " + err);
+            return;
+        }
+        callback(null, user);
+    });
 }
 
 
 
 exports.findOrCreateUser = function(userMetadata, promise) {
-    openLoginsCollection(function(collection) {
-        collection.findOne({id: userMetadata.claimedIdentifier}, function(err, user) {
-        if(err)
-            promise.fail(err);
-        if(user == null) 
-            promise.fulfill(addUser('google_openid', userMetadata));
-        else 
-            promise.fulfill(user);
-        });
+    logins.findOne({id: userMetadata.claimedIdentifier}, function(err, user) {
+    if(err)
+        promise.fail(err);
+    if(user == null) 
+        promise.fulfill(addUser('google_openid', userMetadata));
+    else 
+        promise.fulfill(user);
     });
 }
 
 
 function addUser(sourceUser) {
 	var user = {id: sourceUser.claimedIdentifier, firstname: sourceUser.firstname};
-	openLoginsCollection(function(collection) {
-        collection.insert(user);
-    });
+    collection.insert(user);
 
 	return user;
-}
-
-function openLoginsCollection(callback) {
-    var db = new mongo.Db('nodequestionaire', new mongo.Server('ds035997.mongolab.com',35997, {auto_reconnect: true, pool_size:4}));
-    db.open(function(err, client) {
-       if(err) {
-            console.log(err);
-            return;
-        }
-        client.authenticate('user', 'user', function(err, success) {
-            db.collection('logins', function(err, collection) {
-                logins = collection;
-                console.log('ok logins');
-                callback(collection);
-                //db.close();
-            });
-        });
-    });
 }
 
