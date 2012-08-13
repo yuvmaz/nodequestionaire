@@ -119,3 +119,12 @@ ul{list-style-type:none;}
 #footerPancss{width:50px; height:13px; display:block; position:absolute; top:26px; left:320px;}
 #footerPancss a{width:40px; height:11px; display:block; background:url(/images/blue-arrow.gif) 35px 3px no-repeat #fff; color:#4F4F4F; border:1px solid #DEDEDE; line-height:11px; font-size:11px; font-weight:bold; text-decoration:none; padding:1px 0 0 10px; text-transform:uppercase;}
 #footerPancss a:hover{background:url(/images/gray-arrow.gif) 35px 3px no-repeat #fff; color:#4F4F4F;}
+
+#settingsDialog span {
+    margin: 0.3em 0.3em 0.3em 0;  padding: 5px 10px;
+    float: left; display: block;
+    width: 6em;
+    border-radius: 7px;
+    background-color: #D9CEB0;  color: #FCF9EB
+    font: normal 0.8em Verdana, Sans-serif
+}
