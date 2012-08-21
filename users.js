@@ -37,7 +37,7 @@ exports.findOrCreateUser = function(userMetadata, promise) {
 
 function addUser(sourceUser) {
 	var user = {id: sourceUser.claimedIdentifier, firstname: sourceUser.firstname};
-    collection.insert(user);
+    logins.insert(user);
 
 	return user;
 }
