@@ -5,24 +5,22 @@ var express = require('express'),
     users = require('./users'),
     languages = require('./languages');
 
+everyauth.debug = true;
   
 everyauth.everymodule
 	.findUserById(function(id, callback) {
         return users.findUser(id, callback);
 });
 
-everyauth.openid
-	.myHostname('http://local.host:4000')
-	.sendToAuthenticationUri(function (req, res) {
-        var self = this;
-        this.relyingParty.authenticate('http://www.google.com/accounts/o8/id', false, function(err, authenticationUrl) {
-        if(err) 
-            return p.fail(err);
-
-        self.redirect(res, authenticationUrl);
-        });
-    })
-	.findOrCreateUser(function(session, userMetadata) {
+everyauth.azureacs
+  .identityProviderUrl('https://nodeqacs.accesscontrol.windows.net/v2/wsfederation/')
+  .entryPath('/auth/azureacs')
+  .callbackPath('/auth/azureacs/callback')
+  .signingKey('fsFZ7kFWosQndob50Fg+h6Jt8CLOyPQUdCZjnq84MY0=')
+  .realm('http://nodequestionnaires.com/')
+  .homeRealm('') // if you want to use a default idp (like google/liveid)
+  .tokenFormat('swt') // only swt supported for now
+  .findOrCreateUser(function(session, userMetadata) {
         var promise = this.Promise();
         users.findOrCreateUser(userMetadata, promise);
 
@@ -40,7 +38,7 @@ var app = express.createServer(
 app.set('view engine', 'jade');
 
 app.get('/', function(req, res) {
-    res.render('main.jade', {req: req});
+    res.render('main.jade', {req: req, everyauth: everyauth});
 });
 
 app.get('/getLanguages', function(req, res) {
@@ -48,5 +46,5 @@ app.get('/getLanguages', function(req, res) {
     languages.findMatchingLanguages(term, res);
 });
 
-app.listen(4000);
-console.log("listening on port 4000");
+app.listen(12040);
+console.log("listening on port 12040");

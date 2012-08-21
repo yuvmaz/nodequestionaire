@@ -1,12 +1,12 @@
 - if (req.loggedIn)
     h2 
       span hello 
-      | #{req.user.name}
+      | #{everyauth.user}
     p You <span>are</span> authenticated!
-    if (req.user.languages == null)
-        p You have no languages registerd.  Please use the <span>Settings</span> option to set them.
-    else
-        p Show questions here??!?
+    //if (req.user.languages == null)
+     //   p You have no languages registerd.  Please use the <span>Settings</span> option to set them.
+    //else
+     //   p Show questions here??!?
 - else
     h2 
       span hello 
@@ -14,5 +14,5 @@
     p You are <span>not</span> authenticated
     ul
       li
-        a(href="/auth/openid") Authenticate
+        a(href="/auth/azureacs") Authenticate
 
