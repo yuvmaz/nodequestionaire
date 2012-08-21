@@ -28,7 +28,7 @@ exports.findOrCreateUser = function(userMetadata, promise) {
     if(err)
         promise.fail(err);
     if(user == null) 
-        promise.fulfill(addUser('google_openid', userMetadata));
+        promise.fulfill(addUser(userMetadata));
     else 
         promise.fulfill(user);
     });
@@ -36,7 +36,7 @@ exports.findOrCreateUser = function(userMetadata, promise) {
 
 
 function addUser(sourceUser) {
-	var user = {id: sourceUser.claimedIdentifier, firstname: sourceUser.firstname};
+	var user = {id: sourceUser.claimedIdentifier, name: sourceUser.firstname};
     logins.insert(user);
 
 	return user;

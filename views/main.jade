@@ -1,7 +1,7 @@
 - if (req.loggedIn)
     h2 
       span hello 
-      | #{req.user.firstname}
+      | #{req.user.name}
     p You <span>are</span> authenticated!
     if (req.user.languages == null)
         p You have no languages registerd.  Please use the <span>Settings</span> option to set them.
