@@ -5,7 +5,6 @@ var express = require('express'),
     users = require('./users'),
     languages = require('./languages');
 
-everyauth.debug = true;
   
 everyauth.everymodule
 	.findUserById(function(id, callback) {

@@ -2,6 +2,8 @@ var mongo = require('mongodb');
 var dbHub = require('./dbHub');
 var logins;
 
+var nameIdentifierSchema = 'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier';
+var nameSchema = 'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name';
 
 dbHub.db.collection('logins', function(err, collection) {
     if(err) {
@@ -13,7 +15,7 @@ dbHub.db.collection('logins', function(err, collection) {
 
 exports.findUser = function(id, callback) {
     logins.findOne({id: id}, function(err, user) {
-        if(err) 
+        if(err) { 
             console.log("Error in finding user: " + err);
             return;
         }
@@ -24,7 +26,7 @@ exports.findUser = function(id, callback) {
 
 
 exports.findOrCreateUser = function(userMetadata, promise) {
-    logins.findOne({id: userMetadata.azureacs['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier']}, function(err, user) {
+    logins.findOne({id: userMetadata.azureacs[nameIdentifierSchema]}, function(err, user) {
     if(err)
         promise.fail(err);
     if(user == null) { 
@@ -37,8 +39,8 @@ exports.findOrCreateUser = function(userMetadata, promise) {
 
 
 function addUser(sourceUser) {
-	var user = {id: sourceUser.azureacs['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier'],
-                name: sourceUser.azureacs['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name']};
+	var user = {id: sourceUser.azureacs[nameIdentifierSchema],
+                name: sourceUser.azureacs[nameSchema].replace('+', ' ')};
     logins.insert(user);
 
 	return user;
