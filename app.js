@@ -1,22 +1,22 @@
 var express = require('express'),
 	everyauth = require('everyauth'),
 	util = require('util'),
+    nconf = require('nconf'),
     dbHub = require('./dbHub'),
     users = require('./users'),
     languages = require('./languages');
 
-  
 everyauth.everymodule
 	.findUserById(function(id, callback) {
         return users.findUser(id, callback);
 });
 
 everyauth.azureacs
-  .identityProviderUrl('https://nodeqacs.accesscontrol.windows.net/v2/wsfederation/')
+  .identityProviderUrl(nconf.get('azure:identityProviderUrl'))
   .entryPath('/auth/azureacs')
   .callbackPath('/auth/azureacs/callback')
-  .signingKey('fsFZ7kFWosQndob50Fg+h6Jt8CLOyPQUdCZjnq84MY0=')
-  .realm('http://nodequestionnaires.com/')
+  .signingKey(nconf.get("azure:signingKey"))
+  .realm(nconf.get("azure:realm"))
   .homeRealm('') // if you want to use a default idp (like google/liveid)
   .tokenFormat('swt') // only swt supported for now
   .findOrCreateUser(function(session, userMetadata) {
@@ -31,7 +31,7 @@ var app = express.createServer(
 	express.bodyParser(),
 	express.static(__dirname + "/public"),
 	express.cookieParser(),
-	express.session( {secret: 'BlablaBLA'}),
+	express.session( {secret: nconf.get("sessionKey")}),
 	everyauth.middleware()
 );
 app.set('view engine', 'jade');
@@ -45,5 +45,6 @@ app.get('/getLanguages', function(req, res) {
     languages.findMatchingLanguages(term, res);
 });
 
-app.listen(12040);
-console.log("listening on port 12040");
+var port = nconf.get("port");
+app.listen(port);
+console.log("listening on port " + port);

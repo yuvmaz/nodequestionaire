@@ -5,6 +5,7 @@ syntax: glob
 *.swp
 thumbs.db
 *.orig
+config.json
 
 #-- Directories
 App_Data/*
